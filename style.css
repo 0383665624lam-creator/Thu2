@@ -1,0 +1,99 @@
+body {
+  background-image: url("./img/bgr.png");
+  background-position: center;
+}
+.chuyendong {
+  color: chocolate;
+  font-size: 40px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+
+  /* ánh sáng neon */
+  text-shadow:
+    0 0 5px #00f7ff,
+    0 0 10px #00f7ff,
+    0 0 20px #00f7ff,
+    0 0 40px #00f7ff;
+
+  /* animation tổng hợp */
+  animation:
+    neonBlink 1.2s infinite,
+    float 2s ease-in-out infinite;
+}
+
+/* nháy sáng + đổi độ sáng */
+@keyframes neonBlink {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+    text-shadow:
+      0 0 5px #00f7ff,
+      0 0 10px #00f7ff,
+      0 0 20px #00f7ff,
+      0 0 40px #00f7ff;
+  }
+
+  50% {
+    opacity: 0.6;
+    filter: brightness(1.8);
+    text-shadow:
+      0 0 2px #00f7ff,
+      0 0 5px #00f7ff,
+      0 0 15px #00f7ff,
+      0 0 25px #00f7ff;
+  }
+
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+    text-shadow:
+      0 0 5px #00f7ff,
+      0 0 10px #00f7ff,
+      0 0 20px #00f7ff,
+      0 0 40px #00f7ff;
+  }
+}
+
+/* hiệu ứng bay nhẹ như game UI */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.traiquaphai {
+  display: inline-block;
+  white-space: nowrap;
+
+  font-size: 28px;
+  color: black;
+  font-weight: bold;
+
+  text-shadow:
+    0 0 5px #00f7ff,
+    0 0 15px #00f7ff;
+
+  animation: runGlow 21s linear infinite;
+}
+
+@keyframes runGlow {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(120vw);
+    opacity: 1;
+  }
+}

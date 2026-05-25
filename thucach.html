@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Music Visualizer Scene</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        overflow: hidden;
+        font-family: Arial;
+
+        /* BACKGROUND IMAGE */
+        background: url("./img/bgr.png") no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      .scene {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+        /* overlay để nhìn rõ hiệu ứng */
+        background: radial-gradient(
+          circle,
+          rgba(7, 17, 31, 0.7),
+          rgba(0, 0, 0, 0.9)
+        );
+      }
+
+      /* sao */
+      .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle 3s infinite alternate;
+      }
+
+      @keyframes twinkle {
+        from {
+          opacity: 0.2;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* nhân vật */
+      .hero {
+        position: absolute;
+        left: 50%;
+        top: 45%;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, #fff, #00d0ff, #001122);
+        box-shadow:
+          0 0 40px cyan,
+          0 0 100px #00ffff;
+        animation:
+          float 5s ease-in-out infinite,
+          glow 3s infinite alternate;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translate(-50%, -50%) translateY(0);
+        }
+        50% {
+          transform: translate(-50%, -50%) translateY(-20px);
+        }
+        100% {
+          transform: translate(-50%, -50%) translateY(0);
+        }
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 20px cyan;
+        }
+        to {
+          box-shadow: 0 0 80px white;
+        }
+      }
+
+      /* mắt */
+      .eye {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        top: 60px;
+      }
+      .eye.left {
+        left: 50px;
+      }
+      .eye.right {
+        right: 50px;
+      }
+      .eye::after {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: black;
+        border-radius: 50%;
+        left: 6px;
+        top: 6px;
+      }
+
+      /* miệng */
+      .mouth {
+        position: absolute;
+        width: 70px;
+        height: 35px;
+        background: #ff6699;
+        left: 50%;
+        bottom: 35px;
+        transform: translateX(-50%);
+        border-radius: 0 0 50px 50px;
+      }
+
+      /* visualizer */
+      .visualizer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 170px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 3px;
+      }
+
+      .bar {
+        width: 6px;
+        height: 20px;
+        background: cyan;
+        border-radius: 10px;
+        box-shadow: 0 0 10px cyan;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="scene">
+      <div class="hero">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+      </div>
+
+      <div class="visualizer" id="visualizer"></div>
+    </div>
+
+    <audio id="music">
+      <source src="./music/tris.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script>
+      /* SAO */
+      for (let i = 0; i < 200; i++) {
+        const star = document.createElement("div");
+        star.className = "star";
+        star.style.left = Math.random() * innerWidth + "px";
+        star.style.top = Math.random() * innerHeight + "px";
+        document.querySelector(".scene").appendChild(star);
+      }
+
+      /* AUDIO SETUP */
+      const music = document.getElementById("music");
+
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const source = audioCtx.createMediaElementSource(music);
+      const analyser = audioCtx.createAnalyser();
+
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      analyser.fftSize = 64;
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      /* VISUALIZER */
+      const visualizer = document.getElementById("visualizer");
+
+      for (let i = 0; i < bufferLength; i++) {
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        visualizer.appendChild(bar);
+      }
+
+      const bars = document.querySelectorAll(".bar");
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        analyser.getByteFrequencyData(dataArray);
+
+        bars.forEach((bar, i) => {
+          bar.style.height = dataArray[i] / 2 + "px";
+        });
+      }
+
+      animate();
+
+      /* PLAY ON CLICK */
+      document.body.addEventListener(
+        "click",
+        () => {
+          music.play();
+          audioCtx.resume();
+        },
+        { once: true },
+      );
+    </script>
+  </body>
+</html>
